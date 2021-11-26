@@ -3,10 +3,10 @@
 Check out this template to guide you how the identity and connections(followings and followers) info from a variety of open data sources based off an ETH address are fetched.
 
 The basic idea of getting identity is making requests to the corresponding APIs from each platform to collect data and aggregate them into one single struct.
->[superrare] `https://superrare.com/api/v2/user?address=%s`.
+>[Superrare] `https://superrare.com/api/v2/user?address=%s`
 
 Example of the superrare identity structure and its attributes,
-```
+```go
 type UserSuperrareIdentity struct {
 	Username       string
 	Homepage       string
@@ -23,8 +23,8 @@ type UserSuperrareIdentity struct {
 ```
 
 We could also get some cross-platform data via context api,
->[context] `https://context.app/api/profile/$address"`
-```
+>[Context] `https://context.app/api/profile/$address`
+```go
 case SuperrareContractAddress:
 	result.Superrare = &UserSuperrareIdentity{
 		Homepage:   entry.Url,
@@ -34,13 +34,13 @@ case SuperrareContractAddress:
 ```
 
 To retrieve an address's indexed connection list, e.g. on rarible
->[rarible followings] `https://api-mainnet.rarible.com/marketplace/api/v4/followings?owner=$address`
+>[Rarible followings] `https://api-mainnet.rarible.com/marketplace/api/v4/followings?owner=$address`
 
->[rarible followers] `https://api-mainnet.rarible.com/marketplace/api/v4/followers?user=$address`
+>[Rarible followers] `https://api-mainnet.rarible.com/marketplace/api/v4/followers?user=$address`
 
 
 Example of the connection entry structure,
-```
+```go
 type ConnectionEntryList struct {
 	Conn []ConnectionEntry
 	Err  error
@@ -55,7 +55,7 @@ type ConnectionEntry struct {
 ```
 
 ## Interface
-```
+```go
 type Fetcher interface {
 	// fetch following / follower data
 	FetchConnections(address string) ([]ConnectionEntry, error)
@@ -63,3 +63,10 @@ type Fetcher interface {
 	FetchIdentity(address string) (IdentityEntryList, error)
 }
 ```
+
+## Usage
+
+```sh
+>> go run main.go
+```
+
