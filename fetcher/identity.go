@@ -19,8 +19,8 @@ func (f *fetcher) FetchIdentity(address string) (IdentityEntryList, error) {
 	go f.processContext(address, ch)
 	// Superrare API
 	go f.processSuperrare(address, ch)
-	// Part 2 - Add other data source here
-	// TODO
+	// Twitter identity
+	go f.processSybil(address, ch)
 
 	// Final Part - Merge entry
 	for i := 0; i < IdentityApiCount; i++ {
@@ -137,7 +137,6 @@ func (f *fetcher) processContext(address string, ch chan<- IdentityEntry) {
 	}
 
 	ch <- result
-	return
 }
 
 func (f *fetcher) processSuperrare(address string, ch chan<- IdentityEntry) {
@@ -180,6 +179,41 @@ func (f *fetcher) processSuperrare(address string, ch chan<- IdentityEntry) {
 		newSprRecord.TwitterLink != "" || newSprRecord.SteemitLink != "" || newSprRecord.Website != "" ||
 		newSprRecord.SpotifyLink != "" || newSprRecord.SoundCloudLink != "" {
 		result.Superrare = &newSprRecord
+	}
+
+	ch <- result
+}
+
+func (f *fetcher) processSybil(address string, ch chan<- IdentityEntry) {
+
+	var result IdentityEntry
+
+	body, err := sendRequest(f.httpClient, RequestArgs{
+		url:    SybilUrl,
+		method: "GET",
+	})
+
+	if err != nil {
+		result.Err = err
+		result.Msg = "[processSybil] fetch identity failed"
+		ch <- result
+		return
+	}
+
+	var sybilVerifiedProfiles = SybilVerifiedList{}
+	err = json.Unmarshal(body, &sybilVerifiedProfiles)
+	if err != nil {
+		result.Err = err
+		result.Msg = "[processSybil] unmarshal json failed"
+		ch <- result
+		return
+	}
+
+	entry, exists := sybilVerifiedProfiles[address]
+
+	if exists {
+		twitterIdentity := UserTwitterIdentity{entry.Twitter.Handle, SYBIL}
+		result.Twitter = &twitterIdentity
 	}
 
 	ch <- result

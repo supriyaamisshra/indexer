@@ -49,7 +49,7 @@ func sendRequest(client *http.Client, args RequestArgs) ([]byte, error) {
 		}
 
 	default:
-		return nil, fmt.Errorf("Unsupported method %s", args.method)
+		return nil, fmt.Errorf("unsupported method %s", args.method)
 	}
 
 	req.Header.Add("Content-Type", "application/json")
@@ -59,7 +59,7 @@ func sendRequest(client *http.Client, args RequestArgs) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Response code: %d", resp.StatusCode)
+		return nil, fmt.Errorf("response code: %d", resp.StatusCode)
 	}
 
 	respBody, err := ioutil.ReadAll(resp.Body)

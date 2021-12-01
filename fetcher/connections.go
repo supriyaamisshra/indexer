@@ -52,6 +52,10 @@ func (f *fetcher) getRaribleConnection(address string, isFollowing bool) ([]Rari
 		body:   postBody,
 	})
 
+	if err != nil {
+		return nil, err
+	}
+
 	var results []RaribleConnectionResp
 	err = json.Unmarshal(body, &results)
 	if err != nil {

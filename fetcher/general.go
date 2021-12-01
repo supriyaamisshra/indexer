@@ -4,7 +4,7 @@ const (
 	RARIBLE    = "Rarible"
 	CONTEXT    = "Context"
 	CONVO      = "Convo"
-	TWITTER    = "Twtter"
+	TWITTER    = "Twitter"
 	OPENSEA    = "Opensea"
 	ZORA       = "Zora"
 	FOUNDATION = "Foundation"
@@ -28,6 +28,7 @@ const (
 	SuperrareUrl        = "https://superrare.com/api/v2/user?address=%s"
 	RaribleFollowingUrl = "https://api-mainnet.rarible.com/marketplace/api/v4/followings?owner=%s"
 	RaribleFollowerUrl  = "https://api-mainnet.rarible.com/marketplace/api/v4/followers?user=%s"
+	SybilUrl            = "https://raw.githubusercontent.com/Uniswap/sybil-list/master/verified.json"
 )
 
 type ConnectionEntryList struct {
@@ -187,6 +188,14 @@ type SuperrareProfile struct {
 		SpotifyLink    string `json:"spotifyLink"`
 		SoundCloudLink string `json:"soundcloudLink"`
 	} `json:"result"`
+}
+
+type SybilVerifiedList map[string]struct {
+	Twitter struct {
+		Timestamp uint64 `json:"timestamp"`
+		TweetId   string `json:"tweetID"`
+		Handle    string `json:"handle"`
+	} `json:"twitter"`
 }
 
 type FoundationIdentity struct {
