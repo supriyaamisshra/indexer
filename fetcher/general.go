@@ -12,6 +12,7 @@ const (
 	SYBIL      = "Sybil"
 	SUPERRARE  = "Superrare"
 	INFURA     = "Infura"
+	POAP       = "Poap"
 )
 
 const (
@@ -29,6 +30,8 @@ const (
 	RaribleFollowingUrl = "https://api-mainnet.rarible.com/marketplace/api/v4/followings?owner=%s"
 	RaribleFollowerUrl  = "https://api-mainnet.rarible.com/marketplace/api/v4/followers?user=%s"
 	SybilUrl            = "https://raw.githubusercontent.com/Uniswap/sybil-list/master/verified.json"
+	PoapTokensFetchUrl  = "https://api.poap.xyz/actions/scan/%s"
+	PoapXyzGraphUrl     = "https://api.thegraph.com/subgraphs/name/poap-xyz/poap"
 )
 
 type ConnectionEntryList struct {
@@ -51,6 +54,7 @@ type IdentityEntryList struct {
 	Zora       []UserZoraIdentity
 	Foundation []UserFoundationIdentity
 	Showtime   []UserShowtimeIdentity
+	Poaps      []UserPoapIdentity
 	Ens        string
 }
 
@@ -64,6 +68,7 @@ type IdentityEntry struct {
 	Ens        *UserEnsIdentity
 	Foundation *UserFoundationIdentity
 	Showtime   *UserShowtimeIdentity
+	Poap       *UserPoapIdentity
 	Err        error
 	Msg        string
 }
@@ -147,6 +152,21 @@ type UserShowtimeIdentity struct {
 	RaribleHandle    string
 	DataSource       string
 }
+
+type UserPoapIdentity struct {
+	EventID         string
+	EventDesc       string
+	TokenID         string
+	Recommendations []PoapRecommendation
+}
+
+type PoapRecommendation struct {
+	Address string
+	EventID string
+	TokenID string
+}
+
+// DTOs below
 
 type RaribleConnectionResp struct {
 	Following struct {
@@ -240,4 +260,47 @@ type FoundationIdentity struct {
 			} `json:"instaSocialVerifs"`
 		} `json:"user"`
 	} `json:"data"`
+}
+
+type PoapActionScanResultEntry struct {
+	Event struct {
+		Id          uint64  `json:"id"`
+		FancyId     string  `json:"fancy_id"`
+		Name        string  `json:"name"`
+		EventUrl    string  `json:"event_url"`
+		ImageUrl    string  `json:"image_url"`
+		Country     string  `json:"country"`
+		City        string  `json:"city"`
+		Description string  `json:"description"`
+		Year        uint32  `json:"year"`
+		StartDate   string  `json:"start_date"`
+		EndDate     string  `json:"end_date"`
+		ExpiryDate  string  `json:"expiry_date"`
+		CreatedDate string  `json:"created_date"`
+		Supply      *uint64 `json:"supply"`
+	} `json:"event"`
+
+	TokenID string  `json:"tokenId"`
+	Owner   string  `json:"owner"`
+	Supply  uint64  `json:"supply"`
+	Created *string `json:"created"`
+}
+
+type PoapGraphTokenOwnerData struct {
+	Id string `json:"id"`
+}
+
+type PoapGraphEventTokensData struct {
+	Tokens []struct {
+		Id    string                  `json:"id"`
+		Owner PoapGraphTokenOwnerData `json:"owner"`
+	} `json:"tokens"`
+}
+
+type PoapGraphEventData struct {
+	Event PoapGraphEventTokensData `json:"event"`
+}
+
+type PoapTokenAndOwnerGraphQueryResult struct {
+	Data PoapGraphEventData `json:"data"`
 }
